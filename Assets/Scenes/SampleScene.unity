@@ -7397,9 +7397,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _character: {fileID: 2005820225}
-  _targetPointView: {fileID: 0}
-  _defaultController: 2
-  _defaultNavigator: 1
+  _targetPointView: {fileID: 397514938}
 --- !u!4 &1499572972
 Transform:
   m_ObjectHideFlags: 0
