@@ -15,10 +15,11 @@ public class BehaviorSelecter
     private bool _isLazy;
     private readonly int leftMouseButton = 0;
 
-    public BehaviorSelecter(Character character, Dictionary<ControllersTypes, Controller> controllers)
+    public BehaviorSelecter(Character character, Dictionary<ControllersTypes, Controller> controllers, Controller defaultController)
     {
         _controllers = controllers;
         _character = character;
+        _currentController = defaultController;
 
         Initialize();
     }
@@ -26,7 +27,6 @@ public class BehaviorSelecter
     private void Initialize()
     {
         _controllerSwitcher = new ControllerSwitcher(_controllers);
-        _currentController = _controllerSwitcher.SetController(ControllersTypes.MouseClick);
         _isLazy = true;
         _lazyTime = 0;
     }

@@ -18,6 +18,7 @@ public class Character : MonoBehaviour, IDirectionalMovable, IDirectionalRotatab
 
     private BehaviorSelecter _behaviorSelecter;
     private Dictionary<ControllersTypes, Controller> _controllers = new Dictionary<ControllersTypes, Controller>();
+    private Controller _defaultController;
 
     public Vector3 CurrentVelocity => _mover.CurrentVelocity;
     public Vector3 CurrentPosition => transform.position;
@@ -33,7 +34,7 @@ public class Character : MonoBehaviour, IDirectionalMovable, IDirectionalRotatab
         Navigator navigator = new NavMeshNavigator();
         CreateControllers(navigator, moverListnener);
 
-        _behaviorSelecter = new BehaviorSelecter(this, _controllers);
+        _behaviorSelecter = new BehaviorSelecter(this, _controllers, _defaultController);
         _explodable.Initialize(_health, transform);
         
         _mover = new DirectionalMover(GetComponent<CharacterController>(), _moveSpeed);
@@ -53,6 +54,7 @@ public class Character : MonoBehaviour, IDirectionalMovable, IDirectionalRotatab
     {
         _controllers.Add(ControllersTypes.MouseClick, new MouseClickController(this, navigator, moverListnener));
         _controllers.Add(ControllersTypes.Patrol, new PatrolController(this, navigator, moverListnener));
+        _defaultController = _controllers[ControllersTypes.MouseClick];
     }
 
     public void SetMoveDirection(Vector3 inputDirection) => _mover.SetInputDirection(inputDirection);
