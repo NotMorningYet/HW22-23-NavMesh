@@ -1,12 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 public class Character : MonoBehaviour, IDirectionalMovable, IDirectionalRotatable
 {
     private DirectionalMover _mover;
     private DirectionalRotator _rotator;
     private Health _health;
-    private Explodable _explodable;
 
     [SerializeField] private CharacterView _characterView;
     [SerializeField] private float _moveSpeed;
@@ -15,21 +14,27 @@ public class Character : MonoBehaviour, IDirectionalMovable, IDirectionalRotatab
     [SerializeField] private float _radiusOfPatrol;
     [SerializeField] private int _maxHealth;
     [SerializeField] private int _woundPercent;
+    [SerializeField] private Explodable _explodable;
 
     private BehaviorSelecter _behaviorSelecter;
+    private Dictionary<ControllersTypes, Controller> _controllers = new Dictionary<ControllersTypes, Controller>();
 
     public Vector3 CurrentVelocity => _mover.CurrentVelocity;
     public Vector3 CurrentPosition => transform.position;
     public Quaternion CurrentRotation => _rotator.CurrentRotation;
     public int HP => _health.HP;
-    public IExplodable Explodable => _explodable;
     public Health Health => _health;
+    public Explodable Explodable => _explodable;
 
-    public void Initialize(TargetPointView targetPointView, ControllersTypes controller, NavigatorTypes navigator)
+    public void Initialize(IMoverListnener moverListnener)
     {
         _health = new Health(_characterView, _maxHealth, _woundPercent);
-        _behaviorSelecter = new BehaviorSelecter(this, targetPointView, controller, navigator);
-        _explodable = new Explodable(_health, transform);
+
+        Navigator navigator = new NavMeshNavigator();
+        CreateControllers(navigator, moverListnener);
+
+        _behaviorSelecter = new BehaviorSelecter(this, _controllers);
+        _explodable.Initialize(_health, transform);
         
         _mover = new DirectionalMover(GetComponent<CharacterController>(), _moveSpeed);
         _mover.AddModifier(new HealthSpeedModifier(_health));
@@ -42,6 +47,12 @@ public class Character : MonoBehaviour, IDirectionalMovable, IDirectionalRotatab
         _behaviorSelecter.Update(Time.deltaTime);
         _mover.Update(Time.deltaTime);
         _rotator.Update(Time.deltaTime);
+    }
+
+    private void CreateControllers(Navigator navigator, IMoverListnener moverListnener)
+    {
+        _controllers.Add(ControllersTypes.MouseClick, new MouseClickController(this, navigator, moverListnener));
+        _controllers.Add(ControllersTypes.Patrol, new PatrolController(this, navigator, moverListnener));
     }
 
     public void SetMoveDirection(Vector3 inputDirection) => _mover.SetInputDirection(inputDirection);

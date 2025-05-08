@@ -4,12 +4,9 @@ using UnityEngine;
 public class BehaviorSelecter
 {
     private Character _character;
-    private Dictionary<ControllersTypes, Controller> _controllers = new Dictionary<ControllersTypes, Controller>();
+    private Dictionary<ControllersTypes, Controller> _controllers;
     private Controller _currentController;
-    private Navigator _currentNavigator;
-    private ControllerSwitcher _controllerSwitcher;
-    private NavigatorSwitcher _navigatorSwitcher;
-    private TargetPointView _targetPointView;
+    private ControllerSwitcher _controllerSwitcher;    
 
     private float _deltaTime;
 
@@ -18,32 +15,27 @@ public class BehaviorSelecter
     private bool _isLazy;
     private readonly int leftMouseButton = 0;
 
-    public BehaviorSelecter(Character character, TargetPointView targetPointView, ControllersTypes currentController, NavigatorTypes currentNavigator)
+    public BehaviorSelecter(Character character, Dictionary<ControllersTypes, Controller> controllers)
     {
+        _controllers = controllers;
         _character = character;
-        _targetPointView = targetPointView;
-        _navigatorSwitcher = new NavigatorSwitcher();
-        _currentNavigator = _navigatorSwitcher.SetNavigator(currentNavigator);
-        CreateControllers();
-        _controllerSwitcher = new ControllerSwitcher(_controllers);
-        _currentController = _controllerSwitcher.SetController(currentController);
-        _isLazy = true;
-        _lazyTime = 0;
+
+        Initialize();
     }
 
-    private void CreateControllers()
+    private void Initialize()
     {
-        _controllers.Add(ControllersTypes.Keyboard, new PlayerCharacterController(_character));
-        _controllers.Add(ControllersTypes.MouseClick, new MouseClickController(_character, _currentNavigator, _targetPointView));
-        _controllers.Add(ControllersTypes.Patrol, new PatrolController(_character, _currentNavigator, _targetPointView));
-        _controllers.Add(ControllersTypes.Null, new NullController());
+        _controllerSwitcher = new ControllerSwitcher(_controllers);
+        _currentController = _controllerSwitcher.SetController(ControllersTypes.MouseClick);
+        _isLazy = true;
+        _lazyTime = 0;
     }
 
     public void Update(float deltaTime)
     {
         if (_character.Health.Died)
         {
-            _controllerSwitcher.SetController(ControllersTypes.Null);
+            _controllerSwitcher.DisableAll();
             return;
         }
 
@@ -54,15 +46,13 @@ public class BehaviorSelecter
 
     private void SwitchingBehaviorLogic()
     {
-        switch (_currentController.ControllerType)
+        switch (_currentController)
         {
-            case ControllersTypes.MouseClick:
+            case MouseClickController:
                 MouseClickLogic();
                 break;
-            case ControllersTypes.Patrol:
+            case PatrolController:
                 PatrolLogic();
-                break;
-            case ControllersTypes.Null:
                 break;
             default:
                 break;

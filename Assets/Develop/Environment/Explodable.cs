@@ -1,20 +1,20 @@
 using UnityEngine;
 
-public class Explodable : IExplodable
+public class Explodable : MonoBehaviour, IExplodable
 {
     private ITakeDamagable _healthComponent;
-    private Transform _characterTransform;
-
-    public Explodable(ITakeDamagable healthComponent, Transform characterTransform)
+    private Transform _explodableTransform;
+        
+    public void Initialize(ITakeDamagable healthComponent, Transform explodableTransform)
     {
         _healthComponent = healthComponent;
-        _characterTransform = characterTransform;
+        _explodableTransform = explodableTransform;
     }
 
     public void TakeExplosionEffect(Vector3 explosionPosition, float explosionStrength, float explosionRadius, float upwardModifier)
     {
         Debug.Log("Ёффект от взрыва получен");
-        Vector3 forceDirection = explosionPosition - _characterTransform.position;
+        Vector3 forceDirection = explosionPosition - _explodableTransform.position;
         float distanceToExplosion = forceDirection.magnitude;
 
         int explosionForce = CalculateForce(distanceToExplosion, explosionStrength, explosionRadius);

@@ -40,9 +40,9 @@ public class Explosion : MonoBehaviour
   
             foreach (Collider hit in colliders)
             {
-                Character character = hit.GetComponent<Character>();
+                Explodable explodable = hit.GetComponent<Explodable>();
             
-                character.Explodable?.TakeExplosionEffect(_position, _strength, _radius, _upwardModifier);
+                explodable?.TakeExplosionEffect(_position, _strength, _radius, _upwardModifier);
             }
         }
     }

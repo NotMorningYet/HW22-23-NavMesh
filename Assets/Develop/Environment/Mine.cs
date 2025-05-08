@@ -13,7 +13,6 @@ public class Mine : MonoBehaviour
     private string _isTickingAnimation = "IsTicking";
     private float _timeToExplode;
     private ExplosionFactory _explosionFactory;
-    private DistanceToCharacterCalc _distanceToCharacterCalc;
     private bool _isTickingToExplode;
 
     public void Initialize(ExplosionFactory explosionFactory)
@@ -32,7 +31,7 @@ public class Mine : MonoBehaviour
 
     private void Update()
     {
-        CheskCharacterInRadius();
+        CheskExplodableInRadius();
         CheckTickingToExplode();
     }
 
@@ -47,18 +46,19 @@ public class Mine : MonoBehaviour
         }
     }
 
-    private void CheskCharacterInRadius()
+    private void CheskExplodableInRadius()
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, _radiusDetection, _explodableMask);
 
         foreach (Collider hit in colliders)
         {
-            Character _explodable = hit.GetComponent<Character>();
+            Explodable _explodable = hit.GetComponent<Explodable>();
 
             if (_explodable != null)
             {
                 _isTickingToExplode = true;
                 AnimationTicking();
+                break;
             }
         }
     }
