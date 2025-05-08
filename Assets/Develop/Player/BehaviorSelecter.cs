@@ -27,6 +27,7 @@ public class BehaviorSelecter
     private void Initialize()
     {
         _controllerSwitcher = new ControllerSwitcher(_controllers);
+        _currentController.Enable();
         _isLazy = true;
         _lazyTime = 0;
     }
